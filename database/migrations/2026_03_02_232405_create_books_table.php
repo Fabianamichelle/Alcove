@@ -20,10 +20,9 @@ return new class extends Migration
             $table->integer('current_page')->default(0);
             $table->string('status')->default('reading'); // reading, completed, want_to_read
             $table->timestamps();
-    });
-}
-    
-
+    }
+        );
+    }   
     /**
      * Reverse the migrations.
      */

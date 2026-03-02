@@ -62,3 +62,8 @@ class User extends Authenticatable
             ->implode('');
     }
 }
+
+public function books()
+{
+    return $this->hasMany(Book::class);
+}

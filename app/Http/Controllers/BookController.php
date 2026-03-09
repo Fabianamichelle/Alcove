@@ -18,7 +18,8 @@ class BookController extends Controller
     // The "Entry Form" - Show the page to add a book 
     public function create()
     {
-        return view('alcove');
+        $books = Book::latest()->get();
+        return view('alcove', compact('books'));
     }
 
     // The "Researcher" at work , saves the book to SQLite
@@ -33,7 +34,7 @@ class BookController extends Controller
         Book::create($validated);
 
         // Redirect back to library
-        return redirect()->route('books.index');
+        return redirect()->route('alcove');
     }
 
     // The "update form" to edit book details
@@ -47,7 +48,7 @@ class BookController extends Controller
     {
         $book->delete();
 
-        return redirect()->route('books.index');
+        return redirect()->route('alcove');
     }
 
 }

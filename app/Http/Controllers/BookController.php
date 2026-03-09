@@ -35,6 +35,19 @@ class BookController extends Controller
         // Redirect back to library
         return redirect()->route('books.index');
     }
+
+    // The "update form" to edit book details
+    public function edit(Book $book)
+    {
+        return view('books.edit', compact('books'));
+    }
     
+    // The "Archiver" remove a book from the library 
+    public function destroy(Book $book)
+    {
+        $book->delete();
+
+        return redirect()->route('books.index');
+    }
 
 }

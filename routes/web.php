@@ -5,20 +5,29 @@ use App\Http\Controllers\BookController;
 
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('alcove');
+    }
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+// Book Routes handling '/', 'alcove', and 'home'
+
+Route::get('/alcove', [BookController::class, 'index'])
     ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+    ->name('alcove');
+
+//shadow route for the "dashboard" redirect
+
+Route::get('/dashboard', function () {
+    return redirect('/alcove');
+})->name('dashboard');
+
 
 require __DIR__.'/settings.php';
 
-// Book Routes
-
-Route::get('/', [BookController::class, 'index'])->name('books.index');
-Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
-Route::post('/books', [BookController::class, 'store'])->name('books.store');
 
 // Add CRUD routes for books 
-Route::resource('books', BookController::class);
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('books', BookController::class)->except(['index']);
+});

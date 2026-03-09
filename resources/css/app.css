@@ -9,21 +9,16 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-     extend {
-        colors: {
-            'library green': '#2C423F',  //Dark Forest
-                'alcove-wood': '#562C2C',   // Mahogany
-                'parchment': '#FFEE88',     // Warm paper
-                'moss': '#386641',          // Plant life
-            },
-            fontFamily: {
-                // For that "Grand" scholarly feel
-                serif: ['Playfair Display', 'serif'], 
-                sans: ['Inter', 'sans-serif'],
-            },
-'
-            }       
-    }
+    /* Scholarly Typography */
+    --font-serif: "Playfair Display", serif;
+    --font-sans: "Inter", sans-serif;
+
+    /* Your Alcove Palette */
+    --color-library-green: #2C423F;
+    --color-alcove-wood: #562C2C;
+    --color-parchment: #FFEE88;
+    --color-moss: #386641;
+}
 
 
 @layer theme {

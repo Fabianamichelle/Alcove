@@ -12,13 +12,13 @@ class BookController extends Controller
     public function index()
     {
         $books = Book::latest()->get();
-        return view('books.index', compact('books'));
+        return view('alcove', compact('books'));
     }
 
     // The "Entry Form" - Show the page to add a book 
     public function create()
     {
-        return view('books.create');
+        return view('alcove');
     }
 
     // The "Researcher" at work , saves the book to SQLite
@@ -27,7 +27,7 @@ class BookController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'status' => 'required|in:want to read, reading, finished',
+            'status' => 'required|in:want to read,reading,finished',
         ]);
 
         Book::create($validated);
@@ -39,7 +39,7 @@ class BookController extends Controller
     // The "update form" to edit book details
     public function edit(Book $book)
     {
-        return view('books.edit', compact('books'));
+        return view('alcove', compact('book'));
     }
     
     // The "Archiver" remove a book from the library 

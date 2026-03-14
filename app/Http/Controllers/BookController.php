@@ -54,4 +54,14 @@ class BookController extends Controller
         return redirect()->route('alcove');
     }
 
+    public function toggleStatus(Book $book)
+    {
+        $statuses = ['want to read', 'reading', 'finished'];
+        $currentIndex = array_search($book->status, $statuses);
+        $nextIndex = ($currentIndex + 1) % count($statuses);
+        
+        $book->update(['status' => $statuses[$nextIndex]]);
+        
+        return back();
+    }
 }

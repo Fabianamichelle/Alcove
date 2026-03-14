@@ -29,9 +29,12 @@ class BookController extends Controller
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'status' => 'required|in:want to read,reading,finished',
+            'total_pages' => 'required|integer|min:1',
+            'current_page' => 'required|integer|min:0',
+            'notes' => 'nullable|string',
         ]);
 
-        Book::create($validated);
+        Auth::user()->books()->create($validated);
 
         // Redirect back to library
         return redirect()->route('alcove');

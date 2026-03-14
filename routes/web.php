@@ -31,3 +31,6 @@ require __DIR__.'/settings.php';
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('books', BookController::class)->except(['index']);
 });
+
+// Route for toggling book status
+Route::post('/books/{book}/toggle', [BookController::class, 'toggleStatus'])->name('books.toggle');

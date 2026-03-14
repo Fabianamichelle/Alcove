@@ -46,7 +46,7 @@ class BookController extends Controller
             'author' => 'required|string|max:255',
             'status' => 'required|in:want to read,reading,finished',
             'total_pages' => 'required|integer|min:1',
-            'current_page' => 'required|integer|min:0',
+            'current_page' => 'required|integer|min:0|lte:total_pages',
             'notes' => 'nullable|string',
         ]);
 
@@ -65,7 +65,7 @@ class BookController extends Controller
             'author' => 'required|string|max:255',
             'status' => 'required|in:want to read,reading,finished',
             'total_pages' => 'required|integer|min:1',
-            'current_page' => 'required|integer|min:0',
+            'current_page' => 'required|integer|min:0|lte:total_pages',
             'notes' => 'nullable|string',
         ]);
 
@@ -86,10 +86,26 @@ class BookController extends Controller
     {
         $statuses = ['want to read', 'reading', 'finished'];
         $currentIndex = array_search($book->status, $statuses);
-        $nextIndex = ($currentIndex + 1) % count($statuses);
+        $newStatus = $statuses[($currentIndex + 1) % count($statuses)];
+
+        $book->update(['status' => $newStatus]);
+
+        if ($newStatus === 'finished') {
+            return redirect()->route('alcove')->with('celebrate', true);
+        }
+
+        return redirect()->route('alcove');
+    }
+
+    public function export()
+    {
+        // 1. Fetch only the current user's books
+        $books = Auth::user()->books()->orderBy('status', 'desc')->get();
         
-        $book->update(['status' => $statuses[$nextIndex]]);
-        
-        return back();
+        // 2. Calculate the "Grand Total" for the victory footer
+        $totalPagesRead = $books->sum('current_page');
+
+        // 3. Return the vibrant blade view instead of a text response
+        return view('export-journal', compact('books', 'totalPagesRead'));
     }
 }

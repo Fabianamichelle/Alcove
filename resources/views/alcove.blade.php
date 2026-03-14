@@ -1,3 +1,18 @@
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+    // Trigger confetti when the user finishes a book
+    @if(session('celebrate'))
+    document.addEventListener('DOMContentLoaded', () => {
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#fbbf24', '#f59e0b', '#10b981', '#ffffff']
+        });
+    });
+    @endif
+</script>
+
 <x-layouts.app :title="__('Alcove')">
     <div class="min-h-screen bg-[#0f110d] text-[#e2e2d5] selection:bg-orange-500/30 overflow-x-hidden">
         
@@ -8,21 +23,28 @@
             <header class="flex flex-col md:flex-row justify-between items-center md:items-end mb-20 gap-6">
                 <div class="text-center md:text-left">
                     <h1 class="text-5xl font-serif text-[#f4f4f0] tracking-tight">Your Alcove</h1>
-                    <p class="text-[#8c8c82] italic mt-2 font-serif text-lg">"Stillness is the altar of the mind."</p>
+                    <p class="text-[#8c8c82] italic mt-2 font-serif text-lg">"I hope you find peace in the pages of your books."</p>
                 </div>
 
                 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
                 <style>
                     body { font-family: 'Playfair Display', serif; }
                 </style>
-                
-                @if(!request()->routeIs('books.create') && !isset($book))
-                    <a href="{{ route('books.create') }}" 
-                       class="group flex items-center gap-2 px-6 py-3 bg-[#1e211b] border border-[#3a3d35] rounded-full text-sm tracking-widest uppercase text-[#8c8c82] hover:text-[#f4f4f0] hover:border-[#f4f4f0] transition-all duration-500">
-                        <span>Begin a new log</span>
-                        <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('books.export') }}"
+                        class="px-5 py-3 border border-[#3a3d35] rounded-full text-[10px] tracking-[0.2em] uppercase text-[#8c8c82] hover:text-[#f4f4f0] hover:border-[#f4f4f0] transition-all duration-500">
+                            Export Journal
                     </a>
-                @endif
+
+                    @if(!request()->routeIs('books.create') && !isset($book))
+                        <a href="{{ route('books.create') }}"
+                           class="group flex items-center gap-2 px-6 py-3 bg-[#1e211b] border border-[#3a3d35] rounded-full text-sm tracking-widest uppercase text-[#8c8c82] hover:text-[#f4f4f0] hover:border-[#f4f4f0] transition-all duration-500">
+                            <span>Begin a new log</span>
+                            <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                        </a>
+                    @endif
+                </div>
             </header>
 
             @if(request()->routeIs('books.create') || isset($book))
@@ -130,7 +152,7 @@
 
                                     $glowClass = match($item->status) {
                                         'reading' => 'shadow-[0_0_30px_rgba(249,115,22,0.15)] ring-1 ring-orange-900/20',
-                                        'finished' => 'shadow-[0_0_30px_rgba(16,185,129,0.1)] ring-1 ring-emerald-900/20',
+                                        'finished' => 'shadow-[0_0_40px_rgba(234,179,8,0.3)] ring-2 ring-yellow-500/40 scale-[1.02] border-emerald-500/50', 
                                         default => 'shadow-xl',
                                     };
                                 @endphp

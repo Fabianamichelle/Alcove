@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 class BookController extends Controller
@@ -11,14 +12,14 @@ class BookController extends Controller
     // "The Reading Room" to Display all books
     public function index()
     {
-        $books = Book::latest()->get();
+        $books = Book::where('user_id', Auth::id())->latest()->get();
         return view('alcove', compact('books'));
     }
 
     // The "Entry Form" - Show the page to add a book 
     public function create()
     {
-        $books = Book::latest()->get();
+        $books = Book::where('user_id', Auth::id())->latest()->get();
         return view('alcove', compact('books'));
     }
 
@@ -34,7 +35,7 @@ class BookController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        Auth::user()->books()->create($validated);
+        Book::create(array_merge($validated, ['user_id' => Auth::id()]));
 
         // Redirect back to library
         return redirect()->route('alcove');

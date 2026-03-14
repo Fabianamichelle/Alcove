@@ -19,6 +19,6 @@ Auth: Laravel Breeze (The Secure Entryway)
 
 Styling: Tailwind CSS (The Aesthetic Layer - Dark Academia Palette)
 
-Database: MySQL (The Stacks)
+Database: SQLite (The Stacks)
 
 Deployment: Laravel Cloud (The Horizon)

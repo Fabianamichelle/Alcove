@@ -44,10 +44,28 @@ class BookController extends Controller
     // The "update form" to edit book details
     public function edit(Book $book)
     {
-        return view('alcove', compact('book'));
+        $books = Book::where('user_id', Auth::id())->latest()->get();
+        return view('alcove', compact('book', 'books'));
     }
     
-    // The "Archiver" remove a book from the library 
+    // The "Editor" - saves changes to an existing book
+    public function update(Request $request, Book $book)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'status' => 'required|in:want to read,reading,finished',
+            'total_pages' => 'required|integer|min:1',
+            'current_page' => 'required|integer|min:0',
+            'notes' => 'nullable|string',
+        ]);
+
+        $book->update($validated);
+
+        return redirect()->route('alcove');
+    }
+
+    // The "Archiver" remove a book from the library
     public function destroy(Book $book)
     {
         $book->delete();

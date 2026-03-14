@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('author');
             $table->integer('total_pages')->nullable();
             $table->integer('current_page')->default(0);
-            $table->string('status')->default('reading'); // reading, completed, want_to_read
+            $table->string('status')->default('reading');
+            $table->text('notes')->nullable();
             $table->timestamps();
     }
         );

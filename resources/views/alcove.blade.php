@@ -97,84 +97,109 @@
                 </section>
             @endif
 
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-10 gap-y-16">
-                @forelse ($books as $item)
-                    @php
-                        // 1. Progress Calculation
-                        $progress = ($item->total_pages > 0) ? ($item->current_page / $item->total_pages) * 100 : 0;
-                        
-                        // 2. Deterministic Random Spine Colors
-                        $colors = [
-                            ['bg' => 'bg-[#1a1c18]', 'border' => 'border-l-[#2d3129]'], // Forest
-                            ['bg' => 'bg-[#1c1a18]', 'border' => 'border-l-[#312d29]'], // Earth
-                            ['bg' => 'bg-[#181a1c]', 'border' => 'border-l-[#292d31]'], // Deep Sea
-                            ['bg' => 'bg-[#1b181b]', 'border' => 'border-l-[#312931]'], // Night Plum
-                            ['bg' => 'bg-[#161813]', 'border' => 'border-l-[#2a2d26]'], // Original Charcoal
-                        ];
-                        $style = $colors[$item->id % count($colors)];
+            @php
+                $shelfOrder = [
+                    'reading' => 'Currently Immersed',
+                    'finished' => 'The Finished Shelf',
+                    'want to read' => 'Future Journeys'
+                ];
+            @endphp
 
-                        // 3. Status Glow
-                        $glowClass = match($item->status) {
-                            'reading' => 'shadow-[0_0_30px_rgba(249,115,22,0.15)] ring-1 ring-orange-900/20',
-                            'finished' => 'shadow-[0_0_30px_rgba(16,185,129,0.1)] ring-1 ring-emerald-900/20',
-                            default => 'shadow-xl',
-                        };
-                    @endphp
+            @foreach($shelfOrder as $statusKey => $displayTitle)
+                @if(isset($shelves[$statusKey]))
+                    <section class="mb-24 animate-in fade-in duration-1000">
+                        <div class="flex items-center gap-6 mb-12">
+                            <h2 class="font-serif text-lg text-[#5c5c52] italic tracking-[0.2em] uppercase">{{ $displayTitle }}</h2>
+                            <div class="h-[1px] flex-grow bg-[#2a2d26]"></div>
+                            <span class="text-[10px] text-[#3a3d35] font-mono tracking-widest">{{ $shelves[$statusKey]->count() }} VOLUMES</span>
+                        </div>
 
-                    <div class="group relative aspect-[3/4.5] {{ $style['bg'] }} {{ $style['border'] }} rounded-sm border-l-[4px] transition-all duration-700 cursor-default {{ $glowClass }} hover:-translate-y-3">
-                        
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-white/5 pointer-events-none"></div>
-                        
-                        <div class="relative p-5 h-full flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <span class="text-[8px] uppercase tracking-widest text-[#5c5c52]">
-                                    {{ $item->status == 'reading' ? round($progress).'%' : '' }}
-                                </span>
-                                
-                                <form action="{{ route('books.toggle', $item) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" title="Toggle Status" class="h-3 w-3 rounded-full {{ $item->status == 'reading' ? 'bg-orange-500 shadow-[0_0_10px_orange]' : ($item->status == 'finished' ? 'bg-emerald-500' : 'bg-[#3a3d35]') }} transition-transform hover:scale-150"></button>
-                                </form>
-                            </div>
-
-                            <div class="flex-grow flex flex-col justify-center">
-                                <h3 class="font-serif text-lg leading-tight text-[#f4f4f0]/90 group-hover:text-white transition-colors line-clamp-3">{{ $item->title }}</h3>
-                                <p class="text-[10px] text-[#5c5c52] mt-2 uppercase tracking-[0.15em] font-medium">{{ $item->author }}</p>
-                            </div>
-
-                            <div class="space-y-4">
-                                @if($item->notes)
-                                    <div class="text-[9px] text-[#8c8c82] italic line-clamp-2 font-serif opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                        "{{ $item->notes }}"
-                                    </div>
-                                @endif
-
-                                <div class="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                                    <a href="{{ route('books.edit', $item) }}" class="text-[9px] uppercase tracking-widest text-[#8c8c82] hover:text-white underline underline-offset-4 decoration-[#3a3d35]">Open Log</a>
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-10 gap-y-16">
+                            @foreach($shelves[$statusKey] as $item)
+                                @php
+                                    $progress = ($item->total_pages > 0) ? ($item->current_page / $item->total_pages) * 100 : 0;
                                     
-                                    <form action="{{ route('books.destroy', $item) }}" method="POST" onsubmit="return confirm('Archive this book?');">
-                                        @csrf @method('DELETE')
-                                        <button class="text-[9px] uppercase tracking-widest text-red-900/60 hover:text-red-400">Remove</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                                    $colors = [
+                                        ['bg' => 'bg-[#1a1c18]', 'border' => 'border-l-[#2d3129]'], 
+                                        ['bg' => 'bg-[#1c1a18]', 'border' => 'border-l-[#312d29]'], 
+                                        ['bg' => 'bg-[#181a1c]', 'border' => 'border-l-[#292d31]'], 
+                                        ['bg' => 'bg-[#1b181b]', 'border' => 'border-l-[#312931]'], 
+                                        ['bg' => 'bg-[#161813]', 'border' => 'border-l-[#2a2d26]'], 
+                                    ];
+                                    $style = $colors[$item->id % count($colors)];
 
-                        @if($item->status == 'reading')
-                            <div class="absolute bottom-0 left-0 w-full h-1 bg-black/30 overflow-hidden">
-                                <div class="h-full bg-orange-600/80 transition-all duration-1000 ease-out" style="width: {{ $progress }}%"></div>
-                            </div>
-                        @endif
-                    </div>
-                @empty
-                    <div class="col-span-full py-32 text-center">
-                        <div class="inline-block p-12 border border-dashed border-[#2a2d26] rounded-3xl">
-                            <p class="text-[#5c5c52] font-serif italic text-lg text-center">Your shelves are waiting for their first story.</p>
-                            <a href="{{ route('books.create') }}" class="mt-6 inline-block text-xs uppercase tracking-widest text-[#8c8c82] hover:text-[#f4f4f0] transition-colors border-b border-[#2a2d26] pb-1">Begin</a>
+                                    $glowClass = match($item->status) {
+                                        'reading' => 'shadow-[0_0_30px_rgba(249,115,22,0.15)] ring-1 ring-orange-900/20',
+                                        'finished' => 'shadow-[0_0_30px_rgba(16,185,129,0.1)] ring-1 ring-emerald-900/20',
+                                        default => 'shadow-xl',
+                                    };
+                                @endphp
+
+                                <div class="group relative aspect-[3/4.5] {{ $style['bg'] }} {{ $style['border'] }} rounded-sm border-l-[4px] transition-all duration-700 cursor-default {{ $glowClass }} hover:-translate-y-3">
+                                    <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-white/5 pointer-events-none"></div>
+                                    
+                                    <div class="relative p-5 h-full flex flex-col justify-between">
+                                        <div class="flex justify-between items-start">
+                                            <span class="text-[8px] uppercase tracking-widest text-[#5c5c52]">
+                                                {{ $item->status == 'reading' ? round($progress).'%' : '' }}
+                                            </span>
+                                            
+                                            <form action="{{ route('books.toggle', $item) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="h-3 w-3 rounded-full {{ $item->status == 'reading' ? 'bg-orange-500 shadow-[0_0_10px_orange]' : ($item->status == 'finished' ? 'bg-emerald-500' : 'bg-[#3a3d35]') }} transition-transform hover:scale-150"></button>
+                                            </form>
+                                        </div>
+
+                                        <div class="flex-grow flex flex-col justify-center">
+                                            <h3 class="font-serif text-lg leading-tight text-[#f4f4f0]/90 group-hover:text-white transition-colors line-clamp-3">{{ $item->title }}</h3>
+                                            <p class="text-[10px] text-[#5c5c52] mt-2 uppercase tracking-[0.15em] font-medium">{{ $item->author }}</p>
+                                        </div>
+
+                                        <div class="space-y-4">
+                                            @if($item->notes)
+                                                <div class="text-[9px] text-[#8c8c82] italic line-clamp-2 font-serif opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                                    "{{ $item->notes }}"
+                                                </div>
+                                            @endif
+
+                                            <div class="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                                                <a href="{{ route('books.edit', $item) }}" class="text-[9px] uppercase tracking-widest text-[#8c8c82] hover:text-white underline underline-offset-4 decoration-[#3a3d35]">Open Log</a>
+                                                <form action="{{ route('books.destroy', $item) }}" method="POST" onsubmit="return confirm('Archive this book?');">
+                                                    @csrf @method('DELETE')
+                                                    <button class="text-[9px] uppercase tracking-widest text-red-900/60 hover:text-red-400">Remove</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if($item->status == 'reading')
+                                        <div class="absolute bottom-0 left-0 w-full h-1 bg-black/30 overflow-hidden">
+                                            <div class="h-full bg-orange-600/80 transition-all duration-1000 ease-out" style="width: {{ $progress }}%"></div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
                         </div>
+                    </section>
+                @endif
+            @endforeach
+
+            @if(!isset($shelves) || $shelves->isEmpty())
+                <div class="col-span-full py-32 text-center">
+                    <div class="inline-block p-12 border border-dashed border-[#2a2d26] rounded-3xl">
+                        <p class="text-[#5c5c52] font-serif italic text-lg text-center">Your shelves are waiting for their first story.</p>
+                        <a href="{{ route('books.create') }}" class="mt-6 inline-block text-xs uppercase tracking-widest text-[#8c8c82] hover:text-[#f4f4f0] transition-colors border-b border-[#2a2d26] pb-1">Begin</a>
                     </div>
-                @endforelse
-            </div>
+                </div>
+            @endif
+
+            @if(isset($totalPagesRead) && $totalPagesRead > 0)
+                <footer class="mt-20 py-12 border-t border-[#2a2d26] text-center">
+                    <p class="text-[#5c5c52] font-serif italic text-sm tracking-wide">
+                        You have traveled through {{ number_format($totalPagesRead) }} pages in this alcove.
+                    </p>
+                </footer>
+            @endif
         </div>
     </div>
 </x-layouts.app>

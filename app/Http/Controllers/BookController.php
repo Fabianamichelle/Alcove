@@ -9,19 +9,34 @@ use Illuminate\Support\Facades\Auth;
 
 class BookController extends Controller
 {
-    // "The Reading Room" to Display all books
-    public function index()
+
+   public function index()
     {
-        $books = Book::where('user_id', Auth::id())->latest()->get();
-        return view('alcove', compact('books'));
+        $booksQuery = Book::where('user_id', Auth::id())->latest()->get();
+        
+        // Grouping for the columns
+        $shelves = $booksQuery->groupBy('status');
+        
+        // Calm Stat: Total pages read across all books
+        $totalPagesRead = $booksQuery->sum('current_page');
+
+        return view('alcove', compact('shelves', 'totalPagesRead'));
     }
 
-    // The "Entry Form" - Show the page to add a book 
     public function create()
     {
-        $books = Book::where('user_id', Auth::id())->latest()->get();
-        return view('alcove', compact('books'));
+        return $this->index(); // Keeps it dry by reusing the index logic
     }
+
+    public function edit(Book $book)
+    {
+        $booksQuery = Book::where('user_id', Auth::id())->latest()->get();
+        $shelves = $booksQuery->groupBy('status');
+        $totalPagesRead = $booksQuery->sum('current_page');
+
+        return view('alcove', compact('book', 'shelves', 'totalPagesRead'));
+    }
+
 
     // The "Researcher" at work , saves the book to SQLite
     public function store(Request $request)
@@ -41,12 +56,6 @@ class BookController extends Controller
         return redirect()->route('alcove');
     }
 
-    // The "update form" to edit book details
-    public function edit(Book $book)
-    {
-        $books = Book::where('user_id', Auth::id())->latest()->get();
-        return view('alcove', compact('book', 'books'));
-    }
     
     // The "Editor" - saves changes to an existing book
     public function update(Request $request, Book $book)

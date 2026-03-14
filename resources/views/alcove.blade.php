@@ -26,34 +26,36 @@
             </header>
 
             @if(request()->routeIs('books.create') || isset($book))
-                <section class="max-w-xl mx-auto mb-24 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                    <div class="p-8 bg-[#161813] border border-[#2a2d26] rounded-2xl shadow-2xl shadow-black/50">
-                        <h2 class="font-serif text-2xl text-[#f4f4f0] mb-8 text-center">
+                <section class="max-w-2xl mx-auto mb-32 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                    <div class="p-10 bg-[#f4f4f0] border border-white rounded-2xl shadow-2xl shadow-black/80">
+                        <h2 class="font-serif text-3xl text-[#0f110d] mb-10 text-center italic">
                             {{ isset($book) ? 'Refining the details...' : 'What are we reading today?' }}
                         </h2>
                         
-                        <form action="{{ isset($book) ? route('books.update', $book) : route('books.store') }}" method="POST" class="space-y-8">
+                        <form action="{{ isset($book) ? route('books.update', $book) : route('books.store') }}" method="POST" class="space-y-10">
                             @csrf
                             @if(isset($book)) @method('PUT') @endif
                             
-                            <div class="space-y-1">
-                                <label class="text-[10px] uppercase tracking-[0.2em] text-[#5c5c52]">Title</label>
-                                <input type="text" name="title" value="{{ $book->title ?? '' }}" required
-                                       class="w-full bg-transparent border-b border-[#2a2d26] border-t-0 border-x-0 p-0 pb-2 text-xl font-serif focus:ring-0 focus:border-orange-900/50 placeholder-[#3a3d35]" 
-                                       placeholder="The Great Gatsby">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] uppercase tracking-[0.2em] text-[#8c8c82]">Title</label>
+                                    <input type="text" name="title" value="{{ $book->title ?? '' }}" required
+                                           class="w-full bg-transparent border-b border-[#d1d1c7] border-t-0 border-x-0 p-0 pb-2 text-xl font-serif text-[#0f110d] focus:ring-0 focus:border-orange-900/50 placeholder-[#bcbcb0]" 
+                                           placeholder="The Great Gatsby">
+                                </div>
+
+                                <div class="space-y-1">
+                                    <label class="text-[10px] uppercase tracking-[0.2em] text-[#8c8c82]">Author</label>
+                                    <input type="text" name="author" value="{{ $book->author ?? '' }}" required
+                                           class="w-full bg-transparent border-b border-[#d1d1c7] border-t-0 border-x-0 p-0 pb-2 text-lg font-serif text-[#0f110d] focus:ring-0 focus:border-orange-900/50 placeholder-[#bcbcb0]" 
+                                           placeholder="F. Scott Fitzgerald">
+                                </div>
                             </div>
 
-                            <div class="space-y-1">
-                                <label class="text-[10px] uppercase tracking-[0.2em] text-[#5c5c52]">Author</label>
-                                <input type="text" name="author" value="{{ $book->author ?? '' }}" required
-                                       class="w-full bg-transparent border-b border-[#2a2d26] border-t-0 border-x-0 p-0 pb-2 text-lg font-serif focus:ring-0 focus:border-orange-900/50 placeholder-[#3a3d35]" 
-                                       placeholder="F. Scott Fitzgerald">
-                            </div>
-
-                            <div class="flex flex-col sm:flex-row justify-between items-center pt-4 gap-6">
-                                <div class="flex flex-col gap-1 w-full sm:w-auto">
-                                    <label class="text-[10px] uppercase tracking-[0.2em] text-[#5c5c52]">Shelve under</label>
-                                    <select name="status" class="bg-[#1e211b] border-[#2a2d26] text-[#8c8c82] text-xs rounded-lg focus:ring-orange-900/50">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-end">
+                                <div class="space-y-2">
+                                    <label class="text-[10px] uppercase tracking-[0.2em] text-[#8c8c82]">Shelve under</label>
+                                    <select name="status" class="w-full bg-white border-[#d1d1c7] text-[#0f110d] text-xs rounded-lg focus:ring-orange-900/50 p-2">
                                         @foreach(['want to read', 'reading', 'finished'] as $status)
                                             <option value="{{ $status }}" {{ (isset($book) && $book->status == $status) ? 'selected' : '' }}>
                                                 {{ ucfirst($status) }}
@@ -62,34 +64,93 @@
                                     </select>
                                 </div>
 
-                                <div class="flex items-center gap-6">
-                                    <a href="{{ route('alcove') }}" class="text-xs text-[#5c5c52] hover:text-[#f4f4f0] transition-colors">Discard</a>
-                                    <button type="submit" class="px-8 py-3 bg-[#f4f4f0] text-[#0f110d] rounded-full text-xs font-bold tracking-widest uppercase hover:bg-white transition-colors shadow-lg shadow-white/5">
-                                        {{ isset($book) ? 'Update Log' : 'Save to Library' }}
-                                    </button>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] uppercase tracking-[0.2em] text-[#8c8c82]">Total Pages</label>
+                                    <input type="number" name="total_pages" value="{{ $book->total_pages ?? '' }}" required min="1"
+                                        class="w-full bg-transparent border-b border-[#d1d1c7] border-t-0 border-x-0 p-0 pb-2 text-lg font-serif text-[#0f110d] focus:ring-0 focus:border-orange-900/50" 
+                                        placeholder="350">
                                 </div>
+
+                                <div class="space-y-1">
+                                    <label class="text-[10px] uppercase tracking-[0.2em] text-[#8c8c82]">Current Page</label>
+                                    <input type="number" name="current_page" value="{{ $book->current_page ?? '0' }}" required min="0"
+                                        class="w-full bg-transparent border-b border-[#d1d1c7] border-t-0 border-x-0 p-0 pb-2 text-lg font-serif text-[#0f110d] focus:ring-0 focus:border-orange-900/50" 
+                                        placeholder="0">
+                                </div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-[10px] uppercase tracking-[0.2em] text-[#8c8c82]">Personal Notes</label>
+                                <textarea name="notes" rows="3" 
+                                        class="w-full bg-transparent border-b border-[#d1d1c7] border-t-0 border-x-0 p-0 pb-2 text-sm font-serif text-[#0f110d] focus:ring-0 focus:border-orange-900/50 placeholder-[#bcbcb0] resize-none" 
+                                        placeholder="What does this story leave with you?">{{ $book->notes ?? '' }}</textarea>
+                            </div>
+
+                            <div class="flex items-center justify-end gap-8 pt-4">
+                                <a href="{{ route('alcove') }}" class="text-xs text-[#8c8c82] hover:text-[#0f110d] transition-colors tracking-widest uppercase">Discard</a>
+                                <button type="submit" class="px-10 py-4 bg-[#0f110d] text-[#f4f4f0] rounded-full text-xs font-bold tracking-widest uppercase hover:bg-black transition-all shadow-lg">
+                                    {{ isset($book) ? 'Update Log' : 'Save to Library' }}
+                                </button>
                             </div>
                         </form>
                     </div>
                 </section>
             @endif
 
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-8 gap-y-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-10 gap-y-16">
                 @forelse ($books as $item)
-                    <div class="group relative aspect-[3/4.5] bg-[#161813] rounded-sm border-l-[3px] border-[#2a2d26] shadow-xl hover:-translate-y-3 hover:shadow-2xl transition-all duration-700 cursor-default">
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-white/5 pointer-events-none"></div>
+                    @php
+                        // 1. Progress Calculation
+                        $progress = ($item->total_pages > 0) ? ($item->current_page / $item->total_pages) * 100 : 0;
+                        
+                        // 2. Deterministic Random Spine Colors
+                        $colors = [
+                            ['bg' => 'bg-[#1a1c18]', 'border' => 'border-l-[#2d3129]'], // Forest
+                            ['bg' => 'bg-[#1c1a18]', 'border' => 'border-l-[#312d29]'], // Earth
+                            ['bg' => 'bg-[#181a1c]', 'border' => 'border-l-[#292d31]'], // Deep Sea
+                            ['bg' => 'bg-[#1b181b]', 'border' => 'border-l-[#312931]'], // Night Plum
+                            ['bg' => 'bg-[#161813]', 'border' => 'border-l-[#2a2d26]'], // Original Charcoal
+                        ];
+                        $style = $colors[$item->id % count($colors)];
+
+                        // 3. Status Glow
+                        $glowClass = match($item->status) {
+                            'reading' => 'shadow-[0_0_30px_rgba(249,115,22,0.15)] ring-1 ring-orange-900/20',
+                            'finished' => 'shadow-[0_0_30px_rgba(16,185,129,0.1)] ring-1 ring-emerald-900/20',
+                            default => 'shadow-xl',
+                        };
+                    @endphp
+
+                    <div class="group relative aspect-[3/4.5] {{ $style['bg'] }} {{ $style['border'] }} rounded-sm border-l-[4px] transition-all duration-700 cursor-default {{ $glowClass }} hover:-translate-y-3">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-white/5 pointer-events-none"></div>
                         
                         <div class="relative p-5 h-full flex flex-col justify-between">
-                            <div class="flex justify-end">
-                                <div class="h-1.5 w-1.5 rounded-full {{ $item->status == 'reading' ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]' : ($item->status == 'finished' ? 'bg-emerald-500/50' : 'bg-[#3a3d35]') }}"></div>
+                            <div class="flex justify-between items-start">
+                                <span class="text-[8px] uppercase tracking-widest text-[#5c5c52]">
+                                    {{ $item->status == 'reading' ? round($progress).'%' : '' }}
+                                </span>
+                                
+                                <form action="{{ route('books.toggle', $item) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" title="Toggle Status" class="h-3 w-3 rounded-full {{ $item->status == 'reading' ? 'bg-orange-500 shadow-[0_0_10px_orange]' : ($item->status == 'finished' ? 'bg-emerald-500' : 'bg-[#3a3d35]') }} transition-transform hover:scale-150"></button>
+                                </form>
                             </div>
 
-                            <div>
-                                <h3 class="font-serif text-lg leading-snug text-[#f4f4f0]/90 group-hover:text-white transition-colors">{{ $item->title }}</h3>
+                            <div class="flex-grow flex flex-col justify-center">
+                                <h3 class="font-serif text-lg leading-tight text-[#f4f4f0]/90 group-hover:text-white transition-colors line-clamp-3">{{ $item->title }}</h3>
                                 <p class="text-[10px] text-[#5c5c52] mt-2 uppercase tracking-[0.15em] font-medium">{{ $item->author }}</p>
-                                
-                                <div class="mt-6 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
-                                    <a href="{{ route('books.edit', $item) }}" class="text-[9px] uppercase tracking-widest text-[#8c8c82] hover:text-white">Edit</a>
+                            </div>
+
+                            <div class="space-y-4">
+                                @if($item->notes)
+                                    <div class="text-[9px] text-[#8c8c82] italic line-clamp-2 font-serif opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                        "{{ $item->notes }}"
+                                    </div>
+                                @endif
+
+                                <div class="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                                    <a href="{{ route('books.edit', $item) }}" class="text-[9px] uppercase tracking-widest text-[#8c8c82] hover:text-white underline underline-offset-4 decoration-[#3a3d35]">Open Log</a>
                                     
                                     <form action="{{ route('books.destroy', $item) }}" method="POST" onsubmit="return confirm('Archive this book?');">
                                         @csrf @method('DELETE')
@@ -98,12 +159,18 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if($item->status == 'reading')
+                            <div class="absolute bottom-0 left-0 w-full h-1 bg-black/30 overflow-hidden">
+                                <div class="h-full bg-orange-600/80 transition-all duration-1000 ease-out" style="width: {{ $progress }}%"></div>
+                            </div>
+                        @endif
                     </div>
                 @empty
                     <div class="col-span-full py-32 text-center">
-                        <div class="inline-block p-8 border border-dashed border-[#2a2d26] rounded-3xl">
+                        <div class="inline-block p-12 border border-dashed border-[#2a2d26] rounded-3xl">
                             <p class="text-[#5c5c52] font-serif italic text-lg text-center">Your shelves are waiting for their first story.</p>
-                            <a href="{{ route('books.create') }}" class="mt-4 inline-block text-xs uppercase tracking-widest text-[#8c8c82] hover:text-[#f4f4f0]">Begin</a>
+                            <a href="{{ route('books.create') }}" class="mt-6 inline-block text-xs uppercase tracking-widest text-[#8c8c82] hover:text-[#f4f4f0] transition-colors border-b border-[#2a2d26] pb-1">Begin</a>
                         </div>
                     </div>
                 @endforelse

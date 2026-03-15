@@ -8,7 +8,7 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('alcove');
     }
-    return view('welcome', ['books' => []]);
+    return redirect()->route('login');
 })->name('home');
 
 // Book Routes handling '/', 'alcove', and 'home'
